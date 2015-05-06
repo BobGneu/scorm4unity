@@ -148,7 +148,7 @@ namespace Scorm2004
             }
             return new TimeSpan(ts);
         }
-        public string ToString()
+        public string override ToString()
         {
             string s = "";
             s += "P";
