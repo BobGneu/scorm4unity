@@ -79,7 +79,7 @@ namespace ScormSerialization
             return total;
         }
         //Read in the value of a simple type from the wrapper
-        object DeserializeIntegral(object inobject,Type elementtype, ScormWrapper wrapper)
+        object DeserializeIntegral(object inobject, Type elementtype, ScormWrapper wrapper)
         {
             if (elementtype == typeof(string))
                 inobject = wrapper.Get(GetCurrentIdentifier(), typeof(string)).ToString();
@@ -110,10 +110,10 @@ namespace ScormSerialization
         }
         //If it's a specially formatted string with lang and value portions, treat is as one string and encode the language
         //in braces
-        private object DeSerializeLangString(object inobject,Type type, ScormWrapper wrapper)
+        private object DeSerializeLangString(object inobject, Type type, ScormWrapper wrapper)
         {
-            
-            if(inobject == null)
+
+            if (inobject == null)
                 inobject = Activator.CreateInstance(type);
 
             try
@@ -123,7 +123,7 @@ namespace ScormSerialization
                 //stack.Push("{" + language + "}" + value);
                 //stack.Pop();
 
-                string temp = wrapper.Get(GetCurrentIdentifier(),typeof(string)).ToString();
+                string temp = wrapper.Get(GetCurrentIdentifier(), typeof(string)).ToString();
                 if (temp.IndexOf("{lang=") != -1)
                 {
                     string[] tokens = temp.Split(new string[] { "{lang=", "}" }, StringSplitOptions.RemoveEmptyEntries);
@@ -146,7 +146,7 @@ namespace ScormSerialization
             return inobject;
         }
         //read in the value of a complex type from the wrapper, recurse if necessary
-        object DeserializeObject(object inobject,Type otype, ScormWrapper wrapper)
+        object DeserializeObject(object inobject, Type otype, ScormWrapper wrapper)
         {
             //if the object is null and not an array, create a new instance of the 
             //type it should be
@@ -163,12 +163,12 @@ namespace ScormSerialization
             {
                 //if (inobject == null)
                 {
-                    
+
                     inobject = System.Activator.CreateInstance(otype);
                 }
             }
 
-          
+
 
             //If its not an array iterate over the members
             if (!otype.FullName.Contains("System.Collections.Generic.List"))
@@ -227,14 +227,14 @@ namespace ScormSerialization
                 int i = 0;
                 Array arrray = null;
 
-                    MethodInfo[] methods232 = otype.GetMethods();
-                    foreach (MethodInfo m in methods232)
-                    {
-                        if (m.Name == "ToArray")
-                            arrray = (Array)m.Invoke(inobject, null);
-                    }
-                    otype = arrray.GetType();
-                    for (i = 0; i < length; i++)
+                MethodInfo[] methods232 = otype.GetMethods();
+                foreach (MethodInfo m in methods232)
+                {
+                    if (m.Name == "ToArray")
+                        arrray = (Array)m.Invoke(inobject, null);
+                }
+                otype = arrray.GetType();
+                for (i = 0; i < length; i++)
                 {
                     //push the array index on the identifier name stack
                     stack.Push(i.ToString());
@@ -252,21 +252,21 @@ namespace ScormSerialization
                         )
                         arrray.SetValue(DeserializeIntegral(arrray.GetValue(i), otype.GetElementType(), wrapper), i);
                     else if (IsLangStringType(otype.GetElementType()))
-                    { 
+                    {
                         arrray.SetValue(DeSerializeLangString(arrray.GetValue(i), otype.GetElementType(), wrapper), i);
                     }
                     else
                         //Its a complex object, deserialize it an set it on the array
-                        inobject.GetType().GetMethod("Add").Invoke(inobject,new object[]{DeserializeObject(null, otype.GetElementType(), wrapper)});
+                        inobject.GetType().GetMethod("Add").Invoke(inobject, new object[] { DeserializeObject(null, otype.GetElementType(), wrapper) });
                     //pop the index off the identifier name stack
                     stack.Pop();
                 }
-            } 
+            }
             //return the object - important because the inobject could have changed from null to something, and
             //the parent object must know that the value has been set
             return inobject;
         }
-       
+
     }
     //Serialize a CocD type object to an API wrapper that handles the set calls
     public class ScormSerializer
@@ -324,7 +324,7 @@ namespace ScormSerialization
             thiscommand.RemoveAt(thiscommand.Count - 2);
             string value = (string)thiscommand[thiscommand.Count - 1];
             thiscommand.RemoveAt(thiscommand.Count - 1);
-            
+
             foreach (string i in thiscommand)
             {
                 total += i;
@@ -377,12 +377,12 @@ namespace ScormSerialization
             if (inobject.GetType().IsEnum)
             {
                 string enumname = Enum.GetNames(inobject.GetType())[(int)inobject];
-                
+
                 stack.Push(enumname);
                 RecordStack(inobject.GetType());
                 stack.Pop();
             }
-           
+
             //integral types other than enums
             else
             {
@@ -433,7 +433,7 @@ namespace ScormSerialization
                 }
             }
             //Create the set command for this level in the recursion
-           
+
         }
         //Serialize an object
         private void Serialize(object inobject, Type mType)
@@ -456,7 +456,7 @@ namespace ScormSerialization
             {
                 SerializeIntegral(inobject);
             }
-            else if(IsLangStringType(inobject.GetType()))
+            else if (IsLangStringType(inobject.GetType()))
             {
                 SerializeLangString(inobject);
             }
@@ -473,33 +473,34 @@ namespace ScormSerialization
             Type otype = inobject.GetType();
             //Walk each member if its an array
             if (otype.FullName.Contains("System.Collections.Generic.List"))
-                {
-                    Array mia = null;
-                    MethodInfo[] methods232 = otype.GetMethods();
-                    
-                    mia = (Array)(otype.GetMethod("ToArray").Invoke(inobject, null));
-                    
-                    
-                    
-                    //Set the length of the array
-                    //NOTE: some implementations of SCORM don't let you set the length like this
-                 //   stack.Push("_count");
-                 //   stack.Push(mia.Length.ToString());
-                 //   RecordStack();
-                 //   stack.Pop();
-                 //   stack.Pop();
+            {
+                Array mia = null;
+                MethodInfo[] methods232 = otype.GetMethods();
 
-                    //Push the index on the identifier name stack and process the object in the array
-                    
-                    for (int i = 0; i < mia.Length; i++)
-                    {
-                        stack.Push(i.ToString());
-                        Serialize(mia.GetValue(i),mia.GetType().GetElementType());
-                        stack.Pop();
-                        
-                    }
+                mia = (Array)(otype.GetMethod("ToArray").Invoke(inobject, null));
+
+
+
+                //Set the length of the array
+                //NOTE: some implementations of SCORM don't let you set the length like this
+                //   stack.Push("_count");
+                //   stack.Push(mia.Length.ToString());
+                //   RecordStack();
+                //   stack.Pop();
+                //   stack.Pop();
+
+                //Push the index on the identifier name stack and process the object in the array
+
+                for (int i = 0; i < mia.Length; i++)
+                {
+                    stack.Push(i.ToString());
+                    Serialize(mia.GetValue(i), mia.GetType().GetElementType());
+                    stack.Pop();
+
                 }
-            else{
+            }
+            else
+            {
                 //This object is not an array
                 //Iterate over all the properties of the object
                 PropertyInfo[] members = otype.GetProperties();
@@ -511,34 +512,36 @@ namespace ScormSerialization
                         //Push the name of the member on the stack and recurse
                         stack.Push(mi.Name);
                         object o = mi.GetValue(inobject, null);
-                        if(o != null && SerializeThis(mi))
+                        if (o != null && SerializeThis(mi))
                             Serialize(o, o.GetType());
                         stack.Pop();
                     }
-                    
+
                 }
             }
         }
         private int compare(Object x, Object y)
-            {PropertyInfo p1 = (PropertyInfo)x;
-                PropertyInfo p2 = (PropertyInfo)y;
-                int priority1 = 1000000;
-                int priority2 = 1000000;
-                foreach (object o in p1.GetCustomAttributes(false))
+        {
+            PropertyInfo p1 = (PropertyInfo)x;
+            PropertyInfo p2 = (PropertyInfo)y;
+            int priority1 = 1000000;
+            int priority2 = 1000000;
+            foreach (object o in p1.GetCustomAttributes(false))
+            {
+                if (o.GetType() == typeof(ScormSerialization.PriorityAttribute))
                 {
-                    if (o.GetType() == typeof(ScormSerialization.PriorityAttribute))
-                    {
-                        priority1 = ((PriorityAttribute)o).Priority;
-                    }
+                    priority1 = ((PriorityAttribute)o).Priority;
                 }
-                foreach (object o in p2.GetCustomAttributes(false))
+            }
+            foreach (object o in p2.GetCustomAttributes(false))
+            {
+                if (o.GetType() == typeof(ScormSerialization.PriorityAttribute))
                 {
-                    if (o.GetType() == typeof(ScormSerialization.PriorityAttribute))
-                    {
-                        priority2 = ((PriorityAttribute)o).Priority;
-                    }
+                    priority2 = ((PriorityAttribute)o).Priority;
                 }
-                return priority1 < priority2 ? 1 : 0;}
+            }
+            return priority1 < priority2 ? 1 : 0;
+        }
 
         //OMG it's bubble sort! - Array.Sort fails under MONO
         private PropertyInfo[] SortByPriority(PropertyInfo[] members)
@@ -548,9 +551,9 @@ namespace ScormSerialization
             do
             {
                 swapped = false;
-                for (int i = 1; i < n-1; i++)
+                for (int i = 1; i < n - 1; i++)
                 {
-                    if(compare(members[i-1],members[i]) == -1)
+                    if (compare(members[i - 1], members[i]) == -1)
                     {
                         PropertyInfo mitemp = members[i - 1];
                         members[i - 1] = members[i];
@@ -561,7 +564,7 @@ namespace ScormSerialization
                 n--;
             } while (swapped);
 
-       
+
             return members;
         }
         //List of the set commands for this object
@@ -571,8 +574,8 @@ namespace ScormSerialization
         //The identifier name stack
         Stack<string> stack;
     }
-    public enum SetResult {Ok,Error};
-    public enum GetResult {Ok,Error};
+    public enum SetResult { Ok, Error };
+    public enum GetResult { Ok, Error };
     public abstract class ScormCommand
     {
         private string identifier;
@@ -580,7 +583,7 @@ namespace ScormSerialization
         private Type ExpectedDataType;
 
         public abstract string FilterString(string s);
-     
+
         public void SetIdentifier(string s)
         {
             identifier = FilterString(s);
@@ -617,7 +620,7 @@ namespace ScormSerialization
             if (s == "long_fill_in") s = "long-fill-in";
             if (s == "multiple_choice") s = "multiple-choice";
             if (s == "true_false") s = "true-false";
-            
+
             if (s == "not_attempted") s = "not attempted";
             if (s == "continue_message") s = "continue,message";
             if (s == "continue_no_message") s = "continue,no message";
@@ -627,8 +630,8 @@ namespace ScormSerialization
             if (s == "off") s = "-1";
             if (s == "no_change") s = "0";
             if (s == "on") s = "1";
-            
-                       
+
+
             return s;
         }
         public ScormSet(string i, string v, Type EDT)
@@ -684,7 +687,8 @@ namespace ScormSerialization
         //convert to an enum
         public object ToEnum(Type type)
         {
-            try{
+            try
+            {
                 if (GetValue() == "null") return Enum.Parse(type, "not_set");
                 if (GetValue() == "") return Enum.Parse(type, "not_set");
                 return Enum.Parse(type, GetValue());
@@ -758,7 +762,8 @@ namespace ScormSerialization
             if (GetValue() == "null") return new Scorm2004.TimeSpan(new TimeSpan());
             if (GetValue() == "") return new Scorm2004.TimeSpan(new TimeSpan());
 
-            try{
+            try
+            {
                 return Scorm2004.TimeSpan.Parse(GetValue());
             }
             catch (Exception e)
@@ -780,54 +785,54 @@ namespace ScormSerialization
                 return new Scorm1_2.TimeSpan(new TimeSpan());
             }
         }
-        
+
     }
-    
+
     //This is the interface that the Scorm API bridge should use
     //For Unity, create an object that uses this interface, and passes get/set commands out to javascript
     public interface ScormWrapper
     {
         SetResult Set(ScormSet set);
-        ScormGet Get(string identifier,Type EDT);
+        ScormGet Get(string identifier, Type EDT);
     }
     //This is a ScormWrapper that uses a ScormDatamodelCommandParser to simulate an LMS. 
     //The command parser takes Get/Set commands in the format {get|set identifier [value]}
     public class InMemoryScormSimulator2004 : ScormWrapper
     {
         public ScormDatamodelCommandParser2004 parser;
-       
+
         public InMemoryScormSimulator2004()
         {
             parser = new ScormDatamodelCommandParser2004();
             parser.datamodel = new Scorm2004.DataModel();
-            
+
         }
         public SetResult Set(ScormSet set)
         {
-           //  set = mConverter.Map2004_to_12(set);
+            //  set = mConverter.Map2004_to_12(set);
 
-             string commandstring = set.GetIdentifier() + " " + set.GetValue();
-                commandstring = commandstring.Replace("._count", ".length");
-                commandstring = commandstring.Substring(4);
-                commandstring = "Set " + commandstring;
-                parser.Process(commandstring);
-                Console.WriteLine(commandstring);
-            
+            string commandstring = set.GetIdentifier() + " " + set.GetValue();
+            commandstring = commandstring.Replace("._count", ".length");
+            commandstring = commandstring.Substring(4);
+            commandstring = "Set " + commandstring;
+            parser.Process(commandstring);
+            Console.WriteLine(commandstring);
+
             return SetResult.Ok;
         }
         public ScormGet Get(string identifier, Type EDT)
         {
             ScormGet get = new ScormGet(identifier, "", EDT);
-          //  get = mConverter.Map2004_to_12(get);
+            //  get = mConverter.Map2004_to_12(get);
 
             get.SetIdentifier(get.GetIdentifier().Replace("._count", ".length"));
             get.SetIdentifier(get.GetIdentifier().Substring(4));
             string returnval = parser.Process("Get " + get.GetIdentifier());
             get.SetValue(returnval);
-          //  get = mConverter.Map12_to_2004(get);
+            //  get = mConverter.Map12_to_2004(get);
             Console.WriteLine("Get " + get.GetIdentifier() + " " + get.GetValue());
-            
-            return get  ;
+
+            return get;
         }
     }
 
@@ -883,7 +888,7 @@ namespace ScormSerialization
         }
         public SetResult Set(ScormSet set)
         {
-            
+
             // strip off cmi. for test harness
             string element = set.GetIdentifier().Replace("cmi.", "");
 
@@ -892,7 +897,7 @@ namespace ScormSerialization
             Console.WriteLine("API_1484_11.SetValue(\"" + set.GetIdentifier() + "\",\"" + set.GetValue() + "\");");
             return SetResult.Ok;
         }
-        public ScormGet Get(string identifier,Type EDT)
+        public ScormGet Get(string identifier, Type EDT)
         {
             // strip off cmi. for test harness
             string element = identifier.Replace("cmi.", "");
@@ -900,7 +905,7 @@ namespace ScormSerialization
             string returnval = parser.Process("Get " + element);
             Console.WriteLine("API_1484_11.GetValue(\"" + identifier + "\");");
             Console.WriteLine(returnval);
-            return new ScormGet(identifier, returnval,EDT); ;
+            return new ScormGet(identifier, returnval, EDT); ;
         }
     }
 }

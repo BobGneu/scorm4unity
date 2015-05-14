@@ -29,14 +29,14 @@ namespace Scorm1_2
         public System.DateTime datetime;
         public DateTime(System.DateTime i)
         {
-           if (i != null)
+            if (i != null)
                 datetime = i;
             else
                 datetime = new System.DateTime();
         }
         public DateTime()
         {
-            
+
         }
         public DateTime(Scorm1_2.DateTime i)
         {
@@ -99,7 +99,7 @@ namespace Scorm1_2
              tokens.Length == 4 ? System.Convert.ToInt16(tokens[3]) : 0);
             return new TimeSpan(newspan);
         }
-        public string ToString()
+        public override string ToString()
         {
             return timespan.Hours.ToString("0000") + ":" + timespan.Minutes.ToString("00") + ":" + timespan.Seconds.ToString("00") + "." + timespan.Milliseconds.ToString("00");
         }

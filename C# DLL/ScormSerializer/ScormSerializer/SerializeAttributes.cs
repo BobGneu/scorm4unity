@@ -28,7 +28,7 @@ namespace ScormSerialization
     [AttributeUsage(AttributeTargets.All)]
     public class WriteOnlyAttribute : System.Attribute
     {
-      
+
     }
 
     [AttributeUsage(AttributeTargets.All)]

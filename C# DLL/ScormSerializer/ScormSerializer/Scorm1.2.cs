@@ -67,7 +67,7 @@ namespace Scorm1_2
 
         public DataModel()
         {
-            
+
             this.comments = "";
             this.comments_from_lms = "";
             this.interactions = new System.Collections.Generic.List<interactionType>();
@@ -82,19 +82,19 @@ namespace Scorm1_2
         private string commentsField;
 
         private string commentsFromLMSField;
-       
+
         private System.Collections.Generic.List<interactionType> interactionsField;
-        
+
         [ScormSerialization.ReadOnly]
-        private string launchDataField;        
-     
+        private string launchDataField;
+
         [ScormSerialization.ReadOnly]
         private studentPreferenceType studentPreferenceField;
-               
+
         private System.Collections.Generic.List<objectiveType> objectivesField;
-       
+
         private string suspendDataField;
-          
+
         [ScormSerialization.ReadOnly]
         private int attemptNumberField;
 
@@ -255,7 +255,7 @@ namespace Scorm1_2
             this.lesson_status = lessonStatusType.not_attempted;
             this.entry = entry.ab_initio;
             this.score = new scoreType();
-            this.lesson_mode = mode.normal; 
+            this.lesson_mode = mode.normal;
         }
 
         private string studentIDField;
@@ -332,7 +332,7 @@ namespace Scorm1_2
             }
             set
             {
-                this.creditField= value;
+                this.creditField = value;
             }
         }
 
@@ -363,7 +363,7 @@ namespace Scorm1_2
             }
         }
 
-        
+
         public scoreType score
         {
             get
@@ -1566,7 +1566,7 @@ namespace Scorm1_2
         private System.Nullable<decimal> resultNumericField;
 
         private string latencyField;
-      
+
         private int attemptNumberField;
 
 
@@ -1874,5 +1874,5 @@ namespace Scorm1_2
         exit_no_message,
     }
 
-  
+
 }

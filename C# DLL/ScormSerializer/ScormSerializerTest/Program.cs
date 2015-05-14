@@ -29,33 +29,30 @@ namespace ScormSerializerTest
     {
         static void Main(string[] args)
         {
-            {
-                //Serialize a cocdtype to a scorm API
-                //create an object to handle the get set calls
-                InMemoryScormSimulator2004 sim2004 = new InMemoryScormSimulator2004();
-                InMemoryScormSimulator1_2 sim12 = new InMemoryScormSimulator1_2();
+            //Serialize a cocdtype to a scorm API
+            //create an object to handle the get set calls
+            InMemoryScormSimulator2004 sim2004 = new InMemoryScormSimulator2004();
+            InMemoryScormSimulator1_2 sim12 = new InMemoryScormSimulator1_2();
 
-                Scorm1_2.DataModel model12 = ScormSerialization.ScormDatamodelCommandParser1_2.GetTestData1_2();
-                ScormSerializer serialize12 = new ScormSerializer(model12);
-                serialize12.Serialize(sim12);
+            Scorm1_2.DataModel model12 = ScormSerialization.ScormDatamodelCommandParser1_2.GetTestData1_2();
+            ScormSerializer serialize12 = new ScormSerializer(model12);
+            serialize12.Serialize(sim12);
 
-                ScormVersionConversion.DataModel.Translate(new Scorm1_2.DataModel());
-                ScormVersionConversion.DataModel.Translate(new Scorm2004.DataModel());
+            ScormVersionConversion.DataModel.Translate(new Scorm1_2.DataModel());
+            ScormVersionConversion.DataModel.Translate(new Scorm2004.DataModel());
 
-                Console.WriteLine("\n*****Translated to 2004*****\n");
-                Scorm2004.DataModel model2004 = ScormVersionConversion.DataModel.Translate(model12);
-                //create a serializer for the lr object
-                ScormSerializer serialize2004 = new ScormSerializer(model2004);
-                //serialize the lr object to the InMemoryScormSimulator
-                serialize2004.Serialize(sim2004);
+            Console.WriteLine("\n*****Translated to 2004*****\n");
+            Scorm2004.DataModel model2004 = ScormVersionConversion.DataModel.Translate(model12);
+            //create a serializer for the lr object
+            ScormSerializer serialize2004 = new ScormSerializer(model2004);
+            //serialize the lr object to the InMemoryScormSimulator
+            serialize2004.Serialize(sim2004);
 
-                Console.WriteLine("\n*****Translated Back to 12*****\n");
+            Console.WriteLine("\n*****Translated Back to 12*****\n");
 
-                model12 = ScormVersionConversion.DataModel.Translate(model2004);
-                serialize12 = new ScormSerializer(model12);
-                serialize12.Serialize(sim12);
-
-            }
+            model12 = ScormVersionConversion.DataModel.Translate(model2004);
+            serialize12 = new ScormSerializer(model12);
+            serialize12.Serialize(sim12);
         }
     }
 }

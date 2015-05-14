@@ -28,7 +28,7 @@ namespace ScormSerialization
 {
     public abstract class ScormDatamodelCommandParser
     {
-      //resize an array if you request a set on the length
+        //resize an array if you request a set on the length
         public System.Array ResizeArray(System.Array oldArray, int newSize)
         {
             int oldSize = oldArray.Length;
@@ -514,7 +514,7 @@ namespace ScormSerialization
         public Scorm1_2.DataModel datamodel;
         public static Scorm1_2.DataModel GetTestData1_2()
         {
-         
+
             Scorm1_2.DataModel data = new Scorm1_2.DataModel();
             data.comments = "these are comments!";
             data.comments_from_lms = "these are commetns from the lms";
@@ -528,10 +528,10 @@ namespace ScormSerialization
             data.core.score.max = new decimal(12);
             data.core.score.min = new decimal(1);
             data.core.score.raw = new decimal(32);
-            data.core.session_time = new Scorm1_2.TimeSpan(new System.TimeSpan(0, 0, 100,1));
+            data.core.session_time = new Scorm1_2.TimeSpan(new System.TimeSpan(0, 0, 100, 1));
             data.core.student_id = "sdasdf";
             data.core.student_name = "Jono";
-            data.core.total_time = new Scorm1_2.TimeSpan(new System.TimeSpan(1, 1,1,0));
+            data.core.total_time = new Scorm1_2.TimeSpan(new System.TimeSpan(1, 1, 1, 0));
             data.interactions = new List<Scorm1_2.interactionType>();
             data.interactions.Add(new Scorm1_2.interactionType());
             data.interactions[0].id = "asdf";
@@ -589,7 +589,7 @@ namespace ScormSerialization
 
             data.student_data = new studentDataType();
             data.student_data.mastery_score = new decimal(1);
-            data.student_data.max_time_allowed = new Scorm1_2.TimeSpan(new System.TimeSpan(1,1,1,1));
+            data.student_data.max_time_allowed = new Scorm1_2.TimeSpan(new System.TimeSpan(1, 1, 1, 1));
             data.student_data.time_limit_action = Scorm1_2.timeLimitAction.continue_message;
             data.student_preference = new studentPreferenceType();
             data.student_preference.audio = new decimal(0);
